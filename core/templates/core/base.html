@@ -98,7 +98,7 @@
             color: #fff;
         }
 
-        /* Mobile menu toggle */
+        /* Enhanced Mobile menu toggle */
         .mobile-menu-toggle {
             display: none;
             flex-direction: column;
@@ -106,14 +106,43 @@
             padding: 8px;
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.05);
+            position: relative;
+            width: 42px;
+            height: 42px;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        .mobile-menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        /* Hamburger animation */
         .mobile-menu-toggle span {
             width: 26px;
             height: 3px;
             background: linear-gradient(135deg, #fff, #3b82f6);
             margin: 3px 0;
             border-radius: 2px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+            position: relative;
+        }
+
+        /* Active hamburger to X animation */
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
         }
 
         /* Container */
@@ -269,6 +298,7 @@
                 display: flex;
             }
 
+            /* Enhanced mobile menu with smooth animations */
             .nav-links {
                 position: fixed;
                 top: 0;
@@ -282,12 +312,18 @@
                 align-items: center;
                 gap: 24px;
                 z-index: 1000;
+                transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                opacity: 0;
+                visibility: hidden;
             }
 
             .nav-links.active {
                 left: 0;
+                opacity: 1;
+                visibility: visible;
             }
 
+            /* Staggered animation for nav items */
             .nav-links a {
                 font-size: 1.4rem;
                 padding: 16px 32px;
@@ -297,11 +333,33 @@
                 min-width: 220px;
                 text-align: center;
                 border: 1px solid rgba(255, 255, 255, 0.12);
+                transform: translateY(20px);
+                opacity: 0;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .nav-links.active a {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            /* Staggered delay for each nav item */
+            .nav-links.active a:nth-child(2) {
+                transition-delay: 0.1s;
+            }
+
+            .nav-links.active a:nth-child(3) {
+                transition-delay: 0.2s;
+            }
+
+            .nav-links.active a:nth-child(4) {
+                transition-delay: 0.3s;
             }
 
             .nav-links a:hover {
                 background: rgba(59, 130, 246, 0.2);
                 border-color: rgba(59, 130, 246, 0.4);
+                transform: translateY(-2px) scale(1.02);
             }
 
             .container {
@@ -368,6 +426,17 @@
                 margin-right: 12px;
             }
 
+            .mobile-menu-toggle {
+                width: 38px;
+                height: 38px;
+            }
+
+            .mobile-menu-toggle span {
+                width: 22px;
+                height: 2px;
+                margin: 2px 0;
+            }
+
             .container {
                 margin: 12px 8px;
                 padding: 24px 16px;
@@ -405,7 +474,8 @@
         /* Focus states for accessibility */
         .btn:focus,
         .nav-links a:focus,
-        .mobile-menu-toggle:focus {
+        .mobile-menu-toggle:focus,
+        .close-menu:focus {
             outline: 2px solid #3b82f6;
             outline-offset: 2px;
         }
@@ -417,8 +487,8 @@
         }
 
         /* Improved input styles (if needed) */
-        input[type="text"], 
-        input[type="url"], 
+        input[type="text"],
+        input[type="url"],
         textarea {
             width: 100%;
             padding: 12px 16px;
@@ -430,16 +500,16 @@
             margin-bottom: 16px;
         }
 
-        input[type="text"]:focus, 
-        input[type="url"]:focus, 
+        input[type="text"]:focus,
+        input[type="url"]:focus,
         textarea:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
 
-        input[type="text"]::placeholder, 
-        input[type="url"]::placeholder, 
+        input[type="text"]::placeholder,
+        input[type="url"]::placeholder,
         textarea::placeholder {
             color: #9ca3af;
         }
@@ -475,20 +545,104 @@
         body.menu-open {
             overflow: hidden;
         }
+
+        /* Menu overlay for backdrop effect */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(2px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Close button styling for mobile menu */
+        .close-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 2rem;
+            color: #fff;
+            cursor: pointer;
+            z-index: 1010;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .close-menu:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .close-menu:active {
+            transform: rotate(90deg) scale(0.95);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Show close button only on mobile when menu is active */
+        @media (max-width: 768px) {
+            .nav-links.active .close-menu {
+                display: flex;
+            }
+        }
+
+        /* Enhanced responsiveness */
+        @media (max-width: 992px) and (min-width: 769px) {
+            .nav-links a {
+                font-size: 0.9rem;
+                padding: 10px 16px;
+            }
+        }
+
+        /* Touch-friendly hover states for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .mobile-menu-toggle:hover {
+                transform: none;
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .nav-links a:hover {
+                transform: none;
+                background: rgba(59, 130, 246, 0.15);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Menu overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
     <!-- Navbar -->
     <nav>
         <div class="logo">
             <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
-                <img src="https://i.postimg.cc/Vkw48ftt/Whats-App-Image-2025-08-23-at-12-34-19-a7cc13b3.jpg" alt="AJYRA Logo">
+                <img src="https://i.postimg.cc/Vkw48ftt/Whats-App-Image-2025-08-23-at-12-34-19-a7cc13b3.jpg"
+                    alt="AJYRA Logo">
                 <span>AJYRA FB Downloader</span>
             </a>
         </div>
 
-        <!-- Mobile Menu Toggle -->
+        <!-- Enhanced Mobile Menu Toggle -->
         <div class="mobile-menu-toggle" id="mobileMenuToggle">
             <span></span>
             <span></span>
@@ -497,6 +651,7 @@
 
         <!-- Navigation Links -->
         <div class="nav-links" id="navLinks">
+            <button id="closeMenu" class="close-menu" onclick="closeMenu()">&times;</button>
             <a href="{% url 'core:home' %}" class="active">Home</a>
             <a href="{% url 'core:about' %}">About</a>
             <a href="{% url 'core:contact' %}">Contact</a>
@@ -517,43 +672,118 @@
         <p>&copy; 2025 AJYRA. All rights reserved.</p>
     </footer>
 
-    <!-- Mobile Menu JavaScript -->
+    <!-- Enhanced Mobile Menu JavaScript -->
     <script>
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const navLinks = document.getElementById('navLinks');
+        const menuOverlay = document.getElementById('menuOverlay');
         const body = document.body;
 
-        mobileMenuToggle.addEventListener('click', function() {
-            navLinks.classList.toggle('active');
-            body.classList.toggle('menu-open');
+        let isMenuOpen = false;
+
+        // Toggle menu function
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+
+            if (isMenuOpen) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        }
+
+        // Open menu
+        function openMenu() {
+            mobileMenuToggle.classList.add('active');
+            navLinks.classList.add('active');
+            menuOverlay.classList.add('active');
+            body.classList.add('menu-open');
+            isMenuOpen = true;
+        }
+
+        // Close menu
+        function closeMenu() {
+            mobileMenuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            body.classList.remove('menu-open');
+            isMenuOpen = false;
+        }
+
+        // Event listeners
+        mobileMenuToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleMenu();
         });
 
-        // Close menu when clicking on a nav link
+        // Close menu when clicking overlay
+        menuOverlay.addEventListener('click', function () {
+            closeMenu();
+        });
+
+        // Close menu when clicking on nav links (exclude close button)
         const navLinksItems = navLinks.querySelectorAll('a');
         navLinksItems.forEach(link => {
-            link.addEventListener('click', function() {
-                navLinks.classList.remove('active');
-                body.classList.remove('menu-open');
+            link.addEventListener('click', function () {
+                closeMenu();
             });
         });
 
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (window.innerWidth <= 768) {
-                if (!navLinks.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                    navLinks.classList.remove('active');
-                    body.classList.remove('menu-open');
-                }
+        // Prevent nav links container from closing menu when clicking inside
+        navLinks.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && isMenuOpen) {
+                closeMenu();
             }
         });
 
         // Handle window resize
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                navLinks.classList.remove('active');
-                body.classList.remove('menu-open');
+        window.addEventListener('resize', function () {
+            if (window.innerWidth > 768 && isMenuOpen) {
+                closeMenu();
             }
         });
+
+        // Prevent menu from staying open on orientation change
+        window.addEventListener('orientationchange', function () {
+            setTimeout(() => {
+                if (window.innerWidth > 768 && isMenuOpen) {
+                    closeMenu();
+                }
+            }, 100);
+        });
+
+        // Touch handling for better mobile experience
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function (e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function (e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+
+            // Swipe right to open menu (only when menu is closed and swipe starts from left edge)
+            if (swipeDistance > swipeThreshold && touchStartX < 50 && !isMenuOpen && window.innerWidth <= 768) {
+                openMenu();
+            }
+
+            // Swipe left to close menu (only when menu is open)
+            if (swipeDistance < -swipeThreshold && isMenuOpen) {
+                closeMenu();
+            }
+        }
     </script>
 </body>
 

@@ -19,8 +19,8 @@
       <div class="input-group">
         {{ form.video_url }}
         <button type="submit" class="analyze-btn">
-          <span class="btn-text">Analyze Video</span>
-          <span class="btn-icon">🎬</span>
+          <span class="btn-text">Download Video</span>
+          <!-- <span class="btn-icon">🎬</span> -->
         </button>
       </div>
     </form>
@@ -45,15 +45,15 @@
     <div class="progress-steps">
       <div class="step active">
         <div class="step-icon">1</div>
-        <span>Fetching</span>
+        <span style="color: black;">Fetching</span>
       </div>
       <div class="step">
         <div class="step-icon">2</div>
-        <span>Processing</span>
+        <span style="color: black;">Processing</span>
       </div>
       <div class="step">
         <div class="step-icon">3</div>
-        <span>Complete</span>
+        <span style="color: black;">Complete</span>
       </div>
     </div>
   </div>
@@ -236,14 +236,14 @@
     border: 2px solid rgba(26, 38, 64, 0.1);
     border-radius: 15px;
     font-size: 1.1rem;
-    background: rgba(255, 255, 255, 0.9);
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
     transition: all 0.3s ease;
     outline: none;
   }
 
   .input-group input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    border-color: #4a60c4;
+    box-shadow: 0 0 0 20px rgba(41, 71, 204, 0.1);
   }
 
   .input-group input::placeholder {
@@ -272,9 +272,9 @@
     box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
   }
 
-  .btn-icon {
+  /* .btn-icon {
     font-size: 1.2em;
-  }
+  } */
 
   /* Progress Section */
   .progress-section {
