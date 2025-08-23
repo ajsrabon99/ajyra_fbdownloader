@@ -1,0 +1,577 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="about-hero">
+    <div class="hero-content">
+        <div class="hero-badge">About Us</div>
+        <h1 class="hero-title">AJYRA FB Downloader</h1>
+        <p class="hero-subtitle">Your trusted companion for Facebook video downloads</p>
+    </div>
+</div>
+
+<!-- Main About Section -->
+<div class="about-container">
+    <!-- Description Card -->
+    <div class="description-card">
+        <div class="card-icon">🎬</div>
+        <h2>What We Do</h2>
+        <p class="description-text">
+            AJYRA FB Downloader is a simple and fast online tool designed to help users
+            preview, stream, and download public Facebook videos with ease.
+            Whether it's a post, reel, or shared video, you can quickly get your favorite content
+            in HD or SD format without installing any software.
+        </p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Lightning Fast</h3>
+            <p>Quick processing and instant downloads without delays</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Safe & Secure</h3>
+            <p>No data storage, complete privacy protection</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Mobile Friendly</h3>
+            <p>Works seamlessly across all devices and browsers</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🆓</div>
+            <h3>Completely Free</h3>
+            <p>No registration, no limits, unlimited downloads</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>High Quality</h3>
+            <p>Download videos in original HD and SD quality</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <h3>Online Tool</h3>
+            <p>No software installation required, works in browser</p>
+        </div>
+    </div>
+
+    <!-- Developer Section -->
+    <div class="developer-section">
+        <div class="developer-card">
+            <div class="developer-avatar">
+                <img src="https://i.postimg.cc/HLFZT7F3/Whats-App-Image-2025-08-23-at-15-08-04-42b9ff6b.jpg" alt="AJ Srabon" class="avatar-image">
+            </div>
+            <div class="developer-info">
+                <h2>Meet the Developer</h2>
+                <h3>AJ Srabon</h3>
+                <p class="developer-description">
+                    Passionate web developer dedicated to creating useful tools that make technology accessible to
+                    everyone.
+                    Specializing in building clean, efficient web applications with user experience at the forefront.
+                </p>
+                <div class="developer-links">
+                    <a href="https://www.facebook.com/ashrafuzzaman.srabon.5" target="_blank" class="social-link">
+                        <span class="link-icon">👤</span>
+                        <span>Facebook Profile</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission & Vision -->
+    <div class="mission-vision-grid">
+        <div class="mission-card">
+            <div class="card-header">
+                <div class="header-icon">🎯</div>
+                <h3>Our Mission</h3>
+            </div>
+            <p>
+                To provide a simple, reliable, and free solution for downloading Facebook videos
+                while respecting user privacy and content creators' rights.
+            </p>
+        </div>
+
+        <div class="vision-card">
+            <div class="card-header">
+                <div class="header-icon">🔮</div>
+                <h3>Our Vision</h3>
+            </div>
+            <p>
+                To become the most trusted platform for social media content downloading,
+                expanding to support multiple platforms while maintaining simplicity.
+            </p>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-section">
+        <h2 class="stats-title">Why Users Trust Us</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">100K+</div>
+                <div class="stat-label">Videos Downloaded</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">10K+</div>
+                <div class="stat-label">Happy Users</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Availability</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer Section -->
+    <div class="disclaimer-section">
+        <div class="disclaimer-card">
+            <div class="disclaimer-icon">⚠️</div>
+            <div class="disclaimer-content">
+                <h3>Important Disclaimer</h3>
+                <p>
+                    This tool only works with publicly available videos. Please respect copyright laws
+                    and privacy when downloading content. We are not responsible for any misuse of downloaded content.
+                    Always ensure you have the right to download and use the content you access through our service.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hero Section */
+    .about-hero {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 30px 0;
+    }
+
+    .hero-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #d1d5de, #6f7aa9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: #dadada;
+        font-weight: 500;
+    }
+
+    /* Main Container */
+    .about-container {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    /* Description Card */
+    .description-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .card-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+
+    .description-card h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 25px;
+    }
+
+    .description-text {
+        font-size: 1.15rem;
+        line-height: 1.7;
+        color: #4a5568;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    /* Features Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        padding: 30px 25px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .feature-card h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 12px;
+    }
+
+    .feature-card p {
+        color: #718096;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    /* Developer Section */
+    .developer-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .developer-card {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .developer-avatar {
+        flex-shrink: 0;
+    }
+
+    .avatar-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px #1a2640;
+        /* ensures the image fills the circle */
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .developer-info {
+        flex: 1;
+    }
+
+    .developer-info h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+
+    .developer-info h3 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 15px;
+    }
+
+    .developer-description {
+        color: #4a5568;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .developer-links {
+        display: flex;
+        gap: 15px;
+    }
+
+    .social-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #1a2640, #2d3748);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(26, 38, 64, 0.3);
+    }
+
+    .social-link:hover {
+        box-shadow: 0 8px 25px rgba(26, 38, 64, 0.4);
+        color: white;
+    }
+
+    .link-icon {
+        font-size: 1.1em;
+    }
+
+    /* Mission & Vision */
+    .mission-vision-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+    }
+
+    .mission-card,
+    .vision-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .header-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-header h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .mission-card p,
+    .vision-card p {
+        color: #4a5568;
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+
+    /* Statistics Section */
+    .stats-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stats-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 40px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+    }
+
+    .stat-item {
+        padding: 25px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 15px;
+        border: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: #4a5568;
+        font-weight: 600;
+    }
+
+    /* Disclaimer Section */
+    .disclaimer-section {
+        margin-top: 20px;
+    }
+
+    .disclaimer-card {
+        background: rgba(255, 248, 220, 0.95);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(255, 193, 7, 0.3);
+        border-radius: 15px;
+        padding: 30px;
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        box-shadow: 0 10px 25px rgba(255, 193, 7, 0.1);
+    }
+
+    .disclaimer-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+        margin-top: 5px;
+    }
+
+    .disclaimer-content h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #d69e2e;
+        margin-bottom: 12px;
+    }
+
+    .disclaimer-content p {
+        color: #744210;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .about-container {
+            gap: 35px;
+        }
+
+        .description-card,
+        .developer-section,
+        .stats-section {
+            padding: 25px;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .feature-card {
+            padding: 25px 20px;
+        }
+
+        .developer-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 25px;
+        }
+
+        .avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            font-size: 1.5rem;
+        }
+
+        .mission-vision-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .disclaimer-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 1.8rem;
+        }
+
+        .description-card,
+        .developer-section,
+        .stats-section {
+            padding: 20px;
+        }
+
+        .feature-card {
+            padding: 20px 15px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .disclaimer-card {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}

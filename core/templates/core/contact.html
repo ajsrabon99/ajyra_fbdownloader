@@ -1,0 +1,646 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Contact Header Section -->
+<div class="contact-header">
+    <div class="header-content">
+        <h1 class="contact-title">Contact AJYRA</h1>
+        <p class="contact-subtitle">We'd love to hear from you! Send us a message and we'll get back to you as soon as
+            possible.</p>
+    </div>
+</div>
+
+<!-- Success Message -->
+{% if success %}
+<div class="success-alert">
+    <div class="success-content">
+        <div class="success-icon">✓</div>
+        <div class="success-text">
+            <h3>Message Sent Successfully!</h3>
+            <p>Thank you for reaching out. We'll get back to you within 24 hours.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Main Contact Section -->
+<div class="contact-container">
+    <!-- Contact Form -->
+    <div class="contact-form-section">
+        <div class="form-header">
+            <h2>Send us a Message</h2>
+            <p>Fill out the form below and we'll respond promptly</p>
+        </div>
+
+        <form method="post" class="contact-form">
+            {% csrf_token %}
+
+            <!-- Custom form styling -->
+            <div class="form-group">
+                {% for field in form %}
+                <div class="field-container">
+                    {% if field.label %}
+                    <label for="{{ field.id_for_label }}" class="field-label">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="required">*</span>{% endif %}
+                    </label>
+                    {% endif %}
+
+                    {% if field.name == 'message' %}
+                    <div class="textarea-container">
+                        {{ field }}
+                        <div class="field-icon">💬</div>
+                    </div>
+                    {% elif field.name == 'email' %}
+                    <div class="input-container">
+                        {{ field }}
+                        <div class="field-icon">✉️</div>
+                    </div>
+                    {% elif field.name == 'name' %}
+                    <div class="input-container">
+                        {{ field }}
+                        <div class="field-icon">👤</div>
+                    </div>
+                    {% elif field.name == 'subject' %}
+                    <div class="input-container">
+                        {{ field }}
+                        <div class="field-icon">📝</div>
+                    </div>
+                    {% else %}
+                    <div class="input-container">
+                        {{ field }}
+                    </div>
+                    {% endif %}
+
+                    {% if field.errors %}
+                    <div class="field-error">
+                        {% for error in field.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <span class="btn-text">Send Message</span>
+                <span class="btn-icon">📤</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Contact Info Sidebar -->
+    <div class="contact-info-section">
+        <div class="info-header">
+            <h3>Get in Touch</h3>
+            <p>Connect with us through multiple channels</p>
+        </div>
+
+        <div class="contact-methods">
+            <div class="contact-method">
+                <div class="method-icon">📧</div>
+                <div class="method-content">
+                    <h4>Email Us</h4>
+                    <p>support@ajyra.com</p>
+                    <span class="method-note">Response within 24 hours</span>
+                </div>
+            </div>
+
+            <div class="contact-method">
+                <div class="method-icon">💬</div>
+                <div class="method-content">
+                    <h4>Live Chat</h4>
+                    <p>Available 9 AM - 6 PM</p>
+                    <span class="method-note">Monday to Friday</span>
+                </div>
+            </div>
+
+            <div class="contact-method">
+                <div class="method-icon">❓</div>
+                <div class="method-content">
+                    <h4>FAQ</h4>
+                    <p>Find quick answers</p>
+                    <span class="method-note">Most common questions</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Tips -->
+        <div class="contact-tips">
+            <h4>💡 Quick Tips</h4>
+            <ul>
+                <li>Include the video URL when reporting issues</li>
+                <li>Describe the problem in detail</li>
+                <li>Mention your device and browser</li>
+                <li>Check our FAQ before contacting</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Features Section -->
+<div class="features-section">
+    <h3>Why Contact Us?</h3>
+    <div class="features-grid">
+        <div class="feature-item">
+            <div class="feature-icon">🚀</div>
+            <h4>Feature Requests</h4>
+            <p>Suggest new features or improvements</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">🐛</div>
+            <h4>Bug Reports</h4>
+            <p>Help us fix issues and improve the service</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">🤝</div>
+            <h4>Partnerships</h4>
+            <p>Explore collaboration opportunities</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">💡</div>
+            <h4>General Feedback</h4>
+            <p>Share your thoughts and experiences</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Contact Header */
+    .contact-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 20px 0;
+    }
+
+    .header-content {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .contact-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #d1d5de, #6f7aa9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .contact-subtitle {
+        font-size: 1.2rem;
+        color: #dcdcdc;
+        line-height: 1.6;
+    }
+
+    /* Success Alert */
+    .success-alert {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .success-content {
+        background: linear-gradient(135deg, #48bb78, #38a169);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .success-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .success-text h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .success-text p {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    /* Main Container */
+    .contact-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+        margin-bottom: 50px;
+    }
+
+    /* Contact Form Section */
+    .contact-form-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .form-header h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #718096;
+        font-size: 1.05rem;
+    }
+
+    /* Form Styling */
+    .contact-form {
+        max-width: 100%;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .field-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .field-label {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 1rem;
+    }
+
+    .required {
+        color: #e53e3e;
+        margin-left: 3px;
+    }
+
+    .input-container,
+    .textarea-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-container input,
+    .textarea-container textarea {
+        width: 100%;
+        padding: 15px 50px 15px 20px;
+        border: 2px solid rgba(26, 38, 64, 0.1);
+        border-radius: 12px;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .textarea-container textarea {
+        min-height: 120px;
+        resize: vertical;
+        padding-top: 15px;
+    }
+
+    .input-container input:focus,
+    .textarea-container textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .field-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .textarea-container .field-icon {
+        top: 20px;
+        transform: none;
+    }
+
+    .field-error {
+        color: #e53e3e;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Submit Button */
+    .submit-btn {
+        width: 100%;
+        padding: 18px 24px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .submit-btn:hover {
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-icon {
+        font-size: 1.2em;
+    }
+
+    /* Contact Info Section */
+    .contact-info-section {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .info-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .info-header h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 8px;
+    }
+
+    .info-header p {
+        color: #718096;
+        font-size: 1rem;
+    }
+
+    /* Contact Methods */
+    .contact-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .contact-method {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .contact-method:hover {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .method-icon {
+        font-size: 1.8rem;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .method-content {
+        flex: 1;
+    }
+
+    .method-content h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 5px;
+    }
+
+    .method-content p {
+        color: #4a5568;
+        font-weight: 500;
+        margin-bottom: 3px;
+    }
+
+    .method-note {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    /* Contact Tips */
+    .contact-tips {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .contact-tips h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+
+    .contact-tips ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .contact-tips li {
+        color: #4a5568;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .contact-tips li::before {
+        content: '•';
+        color: #667eea;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
+
+    /* Features Section */
+    .features-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 40px;
+    }
+
+    .features-section h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 30px;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 25px;
+    }
+
+    .feature-item {
+        padding: 25px 20px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 15px;
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    .feature-item h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 8px;
+    }
+
+    .feature-item p {
+        color: #718096;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .contact-title {
+            font-size: 2rem;
+        }
+
+        .contact-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .contact-container {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .contact-form-section,
+        .features-section {
+            padding: 25px;
+        }
+
+        .success-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+        }
+
+        .contact-method {
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            gap: 20px;
+        }
+
+        .input-container input,
+        .textarea-container textarea {
+            padding: 12px 40px 12px 15px;
+            font-size: 0.95rem;
+        }
+
+        .field-icon {
+            right: 12px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .contact-title {
+            font-size: 1.7rem;
+        }
+
+        .contact-form-section,
+        .features-section {
+            padding: 20px;
+        }
+
+        .info-header,
+        .contact-method,
+        .contact-tips {
+            padding: 18px;
+        }
+
+        .submit-btn {
+            padding: 15px 20px;
+            font-size: 1rem;
+        }
+
+        .success-content {
+            padding: 18px 20px;
+        }
+    }
+</style>
+{% endblock %}

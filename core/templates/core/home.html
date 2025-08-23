@@ -1,0 +1,832 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">AJYRA FB Downloader</h1>
+    <p class="hero-subtitle">Download and preview Facebook videos with ease. Paste a <strong>public</strong> Facebook
+      video (post/reel) URL to get started.</p>
+  </div>
+</div>
+
+<!-- Main Form Section -->
+<div class="form-section">
+  <div class="form-container">
+    <form id="videoForm" method="post" novalidate class="video-form">
+      {% csrf_token %}
+      <div class="input-group">
+        {{ form.video_url }}
+        <button type="submit" class="analyze-btn">
+          <span class="btn-text">Analyze Video</span>
+          <span class="btn-icon">🎬</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Progress Section -->
+<div id="progressContainer" class="progress-section" style="display:none;">
+  <div class="progress-content">
+    <div class="progress-icon">⚡</div>
+    <h3 class="progress-title">Processing Your Video</h3>
+    <p class="progress-text">Analyzing video quality and extracting download links...</p>
+
+    <div class="spinner-container">
+      <div class="modern-spinner"></div>
+    </div>
+
+    <div class="progress-bar-container">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <div class="progress-steps">
+      <div class="step active">
+        <div class="step-icon">1</div>
+        <span>Fetching</span>
+      </div>
+      <div class="step">
+        <div class="step-icon">2</div>
+        <span>Processing</span>
+      </div>
+      <div class="step">
+        <div class="step-icon">3</div>
+        <span>Complete</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Error Section -->
+{% if error %}
+<div class="error-section">
+  <div class="error-card">
+    <div class="error-icon">⚠️</div>
+    <h3>Oops! Something went wrong</h3>
+    <p>{{ error }}</p>
+    <button onclick="location.reload()" class="retry-btn">Try Again</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Results Section -->
+{% if info %}
+<div class="results-section">
+  <!-- Video Info Card -->
+  <div class="video-info-card">
+    {% if thumbnail %}
+    <div class="thumbnail-container">
+      <img class="video-thumbnail" src="{{ thumbnail.url|default:thumbnail }}" alt="Video Thumbnail" />
+      <div class="thumbnail-overlay">
+        <div class="play-icon">▶️</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="video-details">
+      <h2 class="video-title">{{ info.title|default:'Untitled Video' }}</h2>
+
+      <div class="video-meta">
+        <div class="meta-item">
+          <span class="meta-label">👤 Uploader</span>
+          <span class="meta-value">{{ info.uploader|default:'Unknown' }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">⏱️ Duration</span>
+          <span class="meta-value">{{ info.duration|default:'—' }} seconds</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Cards -->
+  <div class="action-grid">
+    <!-- Online Play Card -->
+    <div class="action-card play-card">
+      <div class="card-icon">🎥</div>
+      <h3>Stream Online</h3>
+      <p>Watch the video directly in your browser</p>
+      <a class="action-btn primary" href="{% url 'core:play' %}?video_url={{ video_url|urlencode }}">
+        Play Now
+      </a>
+    </div>
+
+    <!-- Download Card -->
+    <div class="action-card download-card">
+      <div class="card-icon">⬇️</div>
+      <h3>Download Options</h3>
+      <p>Save the video to your device</p>
+      <div class="download-options">
+        {% if best %}
+        <a class="action-btn secondary"
+          href="{% url 'core:download' %}?video_url={{ video_url|urlencode }}&format_id={{ best.format_id|urlencode }}">
+          HD Quality ({{ best.height|default:'—' }}p)
+        </a>
+        {% endif %}
+        {% if fallback and fallback.format_id != best.format_id %}
+        <a class="action-btn secondary"
+          href="{% url 'core:download' %}?video_url={{ video_url|urlencode }}&format_id={{ fallback.format_id|urlencode }}">
+          SD Quality ({{ fallback.height|default:'—' }}p)
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Preview -->
+  {% if best %}
+  <div class="preview-section">
+    <h3 class="section-title">Video Preview</h3>
+    <div class="video-player-container">
+      <video class="video-player" controls poster="{{ thumbnail.url|default:thumbnail }}">
+        <source src="{% url 'core:play' %}?video_url={{ video_url|urlencode }}" type="video/mp4" />
+        Your browser doesn't support HTML5 video.
+      </video>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Features Section (when no results) -->
+{% if not info and not error %}
+<div class="features-section">
+  <h2 class="features-title">Why Choose AJYRA FBdownloader?</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Lightning Fast</h3>
+      <p>Quick video processing and instant downloads</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>Mobile Friendly</h3>
+      <p>Works perfectly on all devices and screen sizes</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🆓</div>
+      <h3>Completely Free</h3>
+      <p>No registration required, unlimited downloads</p>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<style>
+  /* Hero Section */
+  .hero-section {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+  }
+
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #d1d5de, #6f7aa9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+    color: #ffffff;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  /* Form Section */
+  .form-section {
+    margin-bottom: 40px;
+  }
+
+  .form-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .video-form {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .input-group {
+    display: flex;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .input-group input {
+    flex: 1;
+    padding: 18px 24px;
+    border: 2px solid rgba(26, 38, 64, 0.1);
+    border-radius: 15px;
+    font-size: 1.1rem;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  .input-group input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  }
+
+  .input-group input::placeholder {
+    color: #a0aec0;
+  }
+
+  .analyze-btn {
+    padding: 18px 32px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    min-width: 180px;
+    justify-content: center;
+  }
+
+  .analyze-btn:hover {
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-icon {
+    font-size: 1.2em;
+  }
+
+  /* Progress Section */
+  .progress-section {
+    margin: 40px auto;
+    max-width: 600px;
+  }
+
+  .progress-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .progress-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+  }
+
+  .progress-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 10px;
+  }
+
+  .progress-text {
+    color: #718096;
+    margin-bottom: 30px;
+    font-size: 1.05rem;
+  }
+
+  .spinner-container {
+    margin: 20px 0;
+  }
+
+  .modern-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(102, 126, 234, 0.1);
+    border-left: 4px solid #667eea;
+    border-radius: 50%;
+    animation: modernSpin 1s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes modernSpin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-steps {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 25px;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+  }
+
+  .step.active {
+    opacity: 1;
+  }
+
+  .step-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: rgba(102, 126, 234, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #667eea;
+  }
+
+  .step.active .step-icon {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+  }
+
+  /* Error Section */
+  .error-section {
+    margin: 40px 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .error-card {
+    background: rgba(255, 245, 245, 0.95);
+    border: 2px solid rgba(255, 77, 77, 0.2);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(255, 77, 77, 0.1);
+  }
+
+  .error-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+  }
+
+  .error-card h3 {
+    color: #e53e3e;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+  }
+
+  .error-card p {
+    color: #c53030;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+  }
+
+  .retry-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .retry-btn:hover {
+    box-shadow: 0 8px 20px rgba(229, 62, 62, 0.3);
+  }
+
+  /* Results Section */
+  .results-section {
+    margin: 40px 0;
+  }
+
+  .video-info-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .thumbnail-container {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .video-thumbnail {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .thumbnail-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .thumbnail-container:hover .thumbnail-overlay {
+    opacity: 1;
+  }
+
+  .play-icon {
+    font-size: 2rem;
+  }
+
+  .video-details {
+    flex: 1;
+  }
+
+  .video-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .video-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .meta-label {
+    font-weight: 600;
+    color: #4a5568;
+    min-width: 120px;
+  }
+
+  .meta-value {
+    color: #2d3748;
+    font-weight: 500;
+  }
+
+  /* Action Grid */
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .action-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .action-card:hover {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+
+  .action-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 10px;
+  }
+
+  .action-card p {
+    color: #718096;
+    margin-bottom: 25px;
+    font-size: 1.05rem;
+  }
+
+  .action-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 5px;
+  }
+
+  .action-btn.primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .action-btn.primary:hover {
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+  }
+
+  .action-btn.secondary {
+    background: rgba(26, 38, 64, 0.1);
+    color: #1a2640;
+    border: 2px solid rgba(26, 38, 64, 0.2);
+  }
+
+  .action-btn.secondary:hover {
+    background: rgba(26, 38, 64, 0.15);
+  }
+
+  .download-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Video Preview */
+  .preview-section {
+    margin: 40px 0;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .video-player-container {
+    display: flex;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .video-player {
+    width: 100%;
+    max-width: 700px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Features Section */
+  .features-section {
+    margin: 60px 0;
+    text-align: center;
+  }
+
+  .features-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #d9d9d9;
+    margin-bottom: 40px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+
+  .feature-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 10px;
+  }
+
+  .feature-card p {
+    color: #718096;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .input-group {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .analyze-btn {
+      min-width: auto;
+    }
+
+    .video-info-card {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .action-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .progress-steps {
+      gap: 15px;
+    }
+
+    .video-meta {
+      align-items: center;
+    }
+
+    .meta-item {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-title {
+      font-size: 1.8rem;
+    }
+
+    .video-form {
+      padding: 20px;
+    }
+
+    .action-card {
+      padding: 20px;
+    }
+
+    .feature-card {
+      padding: 20px 15px;
+    }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('videoForm');
+  const progressContainer = document.getElementById('progressContainer');
+  const progressBar = document.getElementById('progressBar');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Show progress container
+    progressContainer.style.display = 'block';
+    progressBar.style.width = '0%';
+
+    // Scroll to progress section
+    progressContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Update progress steps
+    const steps = document.querySelectorAll('.step');
+    steps.forEach(step => step.classList.remove('active'));
+    steps[0].classList.add('active');
+
+    // Simulate progress
+    let width = 0;
+    let currentStep = 0;
+    const interval = setInterval(() => {
+      if (width >= 90) {
+        clearInterval(interval);
+      } else {
+        width += Math.random() * 10 + 2;
+        if (width > 100) width = 100;
+        progressBar.style.width = width + '%';
+
+        // Update steps
+        if (width > 30 && currentStep === 0) {
+          steps[1].classList.add('active');
+          currentStep = 1;
+        } else if (width > 70 && currentStep === 1) {
+          steps[2].classList.add('active');
+          currentStep = 2;
+        }
+      }
+    }, 200);
+
+    // Submit form
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+    })
+      .then(response => response.text())
+      .then(html => {
+        // Complete progress
+        progressBar.style.width = '100%';
+        steps.forEach(step => step.classList.add('active'));
+
+        setTimeout(() => {
+          document.open();
+          document.write(html);
+          document.close();
+        }, 500);
+      })
+      .catch(err => {
+        console.error(err);
+        progressContainer.style.display = 'none';
+        alert("Something went wrong! Please try again.");
+      });
+  });
+
+  // Add input validation and styling
+  const videoInput = document.querySelector('input[type="url"], input[name*="url"]');
+  if (videoInput) {
+    videoInput.placeholder = "Paste Facebook video URL here...";
+    videoInput.addEventListener('input', function () {
+      if (this.value.trim()) {
+        this.style.borderColor = '#48bb78';
+      } else {
+        this.style.borderColor = '';
+      }
+    });
+  }
+</script>
+{% endblock %}
