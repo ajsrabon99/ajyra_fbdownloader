@@ -35,6 +35,7 @@ env/
 *.sublime-project
 *.sublime-workspace
 
+
 # OS files
 .DS_Store
 Thumbs.db
