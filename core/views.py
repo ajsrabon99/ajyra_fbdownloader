@@ -1,15 +1,17 @@
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, StreamingHttpResponse
+import os
+import tempfile
+from django.http import FileResponse, HttpResponseRedirect, HttpResponseBadRequest, StreamingHttpResponse, HttpResponse
 from django.shortcuts import render
-import requests
-from .forms import VideoForm
+from django.utils.encoding import smart_str
+from yt_dlp import YoutubeDL
+from .forms import VideoForm, ContactForm
 from .utils import extract_info, pick_best_formats
-from .forms import ContactForm
-
+# from django.core.mail import send_mail  # uncomment if using email
+# from django.conf import settings          # uncomment if using email
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 }
-
 
 def home(request):
     context = {}
@@ -17,7 +19,6 @@ def home(request):
         form = VideoForm(request.POST)
         if form.is_valid():
             video_url = form.cleaned_data["video_url"]
-
             try:
                 info = extract_info(video_url)
                 picks = pick_best_formats(info)
@@ -45,72 +46,53 @@ def home(request):
             context["error"] = "Invalid Facebook video URL!"
     else:
         context["form"] = VideoForm()
-
     return render(request, "core/home.html", context)
-
-
-import requests
-from django.http import StreamingHttpResponse, HttpResponseBadRequest
-
-# তোমার HEADERS এখানে define করতে হবে
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-}
-
-def _stream_external(url: str, filename: str = 'video.mp4'):
-    """Stream remote file to client with headers and download attachment."""
-    try:
-        r = requests.get(url, headers=HEADERS, stream=True, timeout=25)
-        r.raise_for_status()
-
-        # fallback content type
-        content_type = r.headers.get('Content-Type', 'application/octet-stream')
-
-        # Streaming response wrapper
-        def file_iterator(chunk_size=8192):
-            for chunk in r.iter_content(chunk_size=chunk_size):
-                if chunk:
-                    yield chunk
-
-        resp = StreamingHttpResponse(file_iterator(), content_type=content_type)
-
-        if 'Content-Length' in r.headers:
-            resp['Content-Length'] = r.headers['Content-Length']
-
-        resp['Content-Disposition'] = f'attachment; filename="{filename}"'
-        return resp
-
-    except requests.RequestException as e:
-        return HttpResponseBadRequest(f"Download failed: {e}")
 
 
 def download_proxy(request):
     video_url = request.GET.get('video_url')
-    format_id = request.GET.get('format_id')
-
-    if not video_url or not format_id:
-        return HttpResponseBadRequest('Missing parameters.')
+    if not video_url:
+        return HttpResponseBadRequest("Missing video_url parameter.")
 
     try:
-        info = extract_info(video_url)
-        # শুধু সেই format বাছাই করবো যেটাতে audio আছে
-        fmt = next(
-            (f for f in info.get('formats', [])
-             if str(f.get('format_id')) == str(format_id)
-             and f.get('acodec') != 'none'),  # audio থাকতে হবে
-            None
+        # Temp directory path
+        tmp_dir = tempfile.gettempdir()
+        output_path = os.path.join(tmp_dir, "temp_video.%(ext)s")
+
+        # yt-dlp options
+        ydl_opts = {
+            'format': 'bestvideo+bestaudio/best',
+            'outtmpl': output_path,
+            'merge_output_format': 'mp4',
+            'quiet': True,
+            'http_headers': HEADERS,
+            'noplaylist': True,
+        }
+
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(video_url, download=True)
+            final_file = ydl.prepare_filename(info)
+
+        if not os.path.exists(final_file):
+            return HttpResponseBadRequest("Failed to download video.")
+
+        # ✅ Force direct download (no preview, Save As dialog opens)
+        response = FileResponse(open(final_file, 'rb'), content_type="video/mp4")
+        response['Content-Length'] = os.path.getsize(final_file)
+        response['Content-Disposition'] = f'attachment; filename="{smart_str(info.get("title", "video"))}.mp4"'
+
+        # ⚠️ Auto-delete file after sending (cleanup)
+        response.close = lambda *args, **kwargs: (
+            super(FileResponse, response).close(*args, **kwargs),
+            os.remove(final_file) if os.path.exists(final_file) else None
         )
 
-        if not fmt or not fmt.get('url'):
-            return HttpResponseBadRequest('Selected format not available with audio.')
-
-        title = info.get('title') or 'facebook_video'
-        filename = f"{title}.mp4".replace('/', '-').replace('\\', '-')
-
-        return _stream_external(fmt['url'], filename)
+        return response
 
     except Exception as e:
-        return HttpResponseBadRequest(f"Error: {e}")
+        import traceback
+        print(traceback.format_exc())
+        return HttpResponseBadRequest(f"Error downloading video: {e}")
 
 
 def play_proxy(request):
@@ -121,9 +103,9 @@ def play_proxy(request):
     try:
         info = extract_info(video_url)
 
-        # formats এর মধ্যে থেকে এমনটা বাছাই করবো যেখানে audio + video দুইটাই আছে
+        # Find format with both audio+video
         best = next(
-            (f for f in reversed(info.get('formats', [])) 
+            (f for f in reversed(info.get('formats', []))
              if f.get('vcodec') != 'none' and f.get('acodec') != 'none'),
             None
         )
@@ -138,10 +120,9 @@ def play_proxy(request):
 
 
 def about(request):
-    """
-    Render the About page for AJYRA FB Downloader
-    """
+    """Render the About page"""
     return render(request, 'core/about.html')
+
 
 def contact(request):
     """Render and process the Contact page form"""
@@ -156,16 +137,16 @@ def contact(request):
             message = form.cleaned_data['message']
 
             # Optional: send an email to site admin
-            try:
-                send_mail(
-                    subject=f"Contact Form: {name}",
-                    message=message,
-                    from_email=email,
-                    recipient_list=[settings.DEFAULT_FROM_EMAIL],
-                )
-                success = True
-            except Exception as e:
-                print(f"Email sending failed: {e}")
+            # try:
+            #     send_mail(
+            #         subject=f"Contact Form: {name}",
+            #         message=message,
+            #         from_email=email,
+            #         recipient_list=[settings.DEFAULT_FROM_EMAIL],
+            #     )
+            #     success = True
+            # except Exception as e:
+            #     print(f"Email sending failed: {e}")
 
     context = {'form': form, 'success': success}
     return render(request, 'core/contact.html', context)
