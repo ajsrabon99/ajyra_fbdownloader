@@ -74,7 +74,6 @@ def _stream_external(url: str, filename: str = 'video.mp4'):
 
         resp = StreamingHttpResponse(file_iterator(), content_type=content_type)
 
-        # ✅ গুরুত্বপূর্ণ: Content-Length দিলে ব্রাউজার ফাইল সাইজ বুঝতে পারবে
         if 'Content-Length' in r.headers:
             resp['Content-Length'] = r.headers['Content-Length']
 
@@ -93,17 +92,21 @@ def download_proxy(request):
         return HttpResponseBadRequest('Missing parameters.')
 
     try:
-        # extract_info তুমি আগে define করেছো ধরে নিচ্ছি
         info = extract_info(video_url)
-        fmt = next((f for f in info.get('formats', []) if str(f.get('format_id')) == str(format_id)), None)
+        # শুধু সেই format বাছাই করবো যেটাতে audio আছে
+        fmt = next(
+            (f for f in info.get('formats', [])
+             if str(f.get('format_id')) == str(format_id)
+             and f.get('acodec') != 'none'),  # audio থাকতে হবে
+            None
+        )
 
         if not fmt or not fmt.get('url'):
-            return HttpResponseBadRequest('Selected format not available.')
+            return HttpResponseBadRequest('Selected format not available with audio.')
 
         title = info.get('title') or 'facebook_video'
         filename = f"{title}.mp4".replace('/', '-').replace('\\', '-')
 
-        # ফাইনালি stream করে client-এ পাঠানো হবে
         return _stream_external(fmt['url'], filename)
 
     except Exception as e:
@@ -117,13 +120,19 @@ def play_proxy(request):
 
     try:
         info = extract_info(video_url)
-        picks = pick_best_formats(info)
-        best = picks['best'] or picks['fallback']
+
+        # formats এর মধ্যে থেকে এমনটা বাছাই করবো যেখানে audio + video দুইটাই আছে
+        best = next(
+            (f for f in reversed(info.get('formats', [])) 
+             if f.get('vcodec') != 'none' and f.get('acodec') != 'none'),
+            None
+        )
 
         if not best or not best.get('url'):
-            return HttpResponseBadRequest('Playable URL not found.')
+            return HttpResponseBadRequest('Playable URL with audio not found.')
 
         return HttpResponseRedirect(best['url'])
+
     except Exception as e:
         return HttpResponseBadRequest(f"Error: {e}")
 
