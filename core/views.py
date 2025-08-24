@@ -1,5 +1,6 @@
 import os
 import tempfile
+import threading
 from django.http import FileResponse, HttpResponseRedirect, HttpResponseBadRequest, StreamingHttpResponse, HttpResponse
 from django.shortcuts import render
 from django.utils.encoding import smart_str
@@ -48,6 +49,15 @@ def home(request):
         context["form"] = VideoForm()
     return render(request, "core/home.html", context)
 
+def _stream_file(path, filename="video.mp4"):
+    """
+    Stream local file as Django FileResponse
+    """
+    try:
+        response = FileResponse(open(path, "rb"), as_attachment=True, filename=filename)
+        return response
+    except Exception as e:
+        raise e
 
 def download_proxy(request):
     video_url = request.GET.get('video_url')
@@ -59,14 +69,18 @@ def download_proxy(request):
         tmp_dir = tempfile.gettempdir()
         output_path = os.path.join(tmp_dir, "temp_video.%(ext)s")
 
-        # yt-dlp options
+        # yt-dlp options (optimized for slow WiFi)
         ydl_opts = {
-            'format': 'bestvideo+bestaudio/best',
-            'outtmpl': output_path,
-            'merge_output_format': 'mp4',
-            'quiet': True,
-            'http_headers': HEADERS,
-            'noplaylist': True,
+            "format": "best[height<=480]/best",  # ছোট resolution নেবে, fallback best
+            "outtmpl": output_path,
+            "merge_output_format": "mp4",
+            "quiet": True,
+            "http_headers": HEADERS,
+            "noplaylist": True,
+            "socket_timeout": 120,       # slow net এর জন্য বেশি সময়
+            "retries": 10,               # বারবার চেষ্টা করবে
+            "fragment_retries": 10,      # ফ্রাগমেন্ট fail হলে আবার চেষ্টা
+            "continuedl": True,          # resume support
         }
 
         with YoutubeDL(ydl_opts) as ydl:
@@ -76,16 +90,16 @@ def download_proxy(request):
         if not os.path.exists(final_file):
             return HttpResponseBadRequest("Failed to download video.")
 
-        # ✅ Force direct download (no preview, Save As dialog opens)
-        response = FileResponse(open(final_file, 'rb'), content_type="video/mp4")
-        response['Content-Length'] = os.path.getsize(final_file)
-        response['Content-Disposition'] = f'attachment; filename="{smart_str(info.get("title", "video"))}.mp4"'
+        response = _stream_file(final_file, filename=info.get("title", "video") + ".mp4")
 
-        # ⚠️ Auto-delete file after sending (cleanup)
-        response.close = lambda *args, **kwargs: (
-            super(FileResponse, response).close(*args, **kwargs),
-            os.remove(final_file) if os.path.exists(final_file) else None
-        )
+        # ফাইল ডিলিট safe way
+        def cleanup(path):
+            try:
+                os.remove(path)
+            except PermissionError:
+                print(f"⚠️ Could not delete {path}, file still in use.")
+
+        threading.Thread(target=cleanup, args=(final_file,)).start()
 
         return response
 
